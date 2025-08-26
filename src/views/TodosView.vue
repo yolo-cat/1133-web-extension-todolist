@@ -9,107 +9,95 @@
       <TodoForm @todo-add="addTodo" />
     </el-card>
 
-    <div class="todo-categories">
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <el-card class="category-card">
-            <template #header>
-              <span>暫存區</span>
-            </template>
-            <draggable
-              :list="todosByCategory.draft"
-              group="todos"
-              @change="onDragChange('draft', $event)"
-              item-key="id"
-            >
-              <template #item="{ element }">
-                <ToDoItem
-                  :id="element.id"
-                  :label="element.label"
-                  :done="element.done"
-                  @checkbox-changed="updateDoneStatus"
-                  @item-deleted="deleteTodo"
-                  @item-edited="editTodo"
-                />
-              </template>
-            </draggable>
-          </el-card>
-        </el-col>
-        <el-col :span="12">
-          <el-card class="category-card">
-            <template #header>
-              <span>解釋區</span>
-            </template>
-            <draggable
-              :list="todosByCategory.explain"
-              group="todos"
-              @change="onDragChange('explain', $event)"
-              item-key="id"
-            >
-              <template #item="{ element }">
-                <ToDoItem
-                  :id="element.id"
-                  :label="element.label"
-                  :done="element.done"
-                  @checkbox-changed="updateDoneStatus"
-                  @item-deleted="deleteTodo"
-                  @item-edited="editTodo"
-                />
-              </template>
-            </draggable>
-          </el-card>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 20px;">
-        <el-col :span="12">
-          <el-card class="category-card">
-            <template #header>
-              <span>分析區</span>
-            </template>
-            <draggable
-              :list="todosByCategory.analyze"
-              group="todos"
-              @change="onDragChange('analyze', $event)"
-              item-key="id"
-            >
-              <template #item="{ element }">
-                <ToDoItem
-                  :id="element.id"
-                  :label="element.label"
-                  :done="element.done"
-                  @checkbox-changed="updateDoneStatus"
-                  @item-deleted="deleteTodo"
-                  @item-edited="editTodo"
-                />
-              </template>
-            </draggable>
-          </el-card>
-        </el-col>
-        <el-col :span="12">
-          <el-card class="category-card">
-            <template #header>
-              <span>總結區</span>
-            </template>
-            <draggable
-              :list="todosByCategory.summary"
-              group="todos"
-              @change="onDragChange('summary', $event)"
-              item-key="id"
-            >
-              <template #item="{ element }">
-                <ToDoItem
-                  :id="element.id"
-                  :label="element.label"
-                  :done="element.done"
-                  @checkbox-changed="updateDoneStatus"
-                  @item-deleted="deleteTodo"
-                  @item-edited="editTodo"
-                />
-              </template>
-            </draggable>
-          </el-card>
-        </el-col>
-      </el-row>
+    <div class="todo-categories todo-stack">
+      <el-card class="category-card">
+        <template #header>
+          <span>暫存區</span>
+        </template>
+        <draggable
+          :list="todosByCategory.draft"
+          group="todos"
+          @change="onDragChange('draft', $event)"
+          item-key="id"
+        >
+          <template #item="{ element }">
+            <ToDoItem
+              :id="element.id"
+              :label="element.label"
+              :done="element.done"
+              @checkbox-changed="updateDoneStatus"
+              @item-deleted="deleteTodo"
+              @item-edited="editTodo"
+            />
+          </template>
+        </draggable>
+      </el-card>
+      <el-card class="category-card">
+        <template #header>
+          <span>解釋區</span>
+        </template>
+        <draggable
+          :list="todosByCategory.explain"
+          group="todos"
+          @change="onDragChange('explain', $event)"
+          item-key="id"
+        >
+          <template #item="{ element }">
+            <ToDoItem
+              :id="element.id"
+              :label="element.label"
+              :done="element.done"
+              @checkbox-changed="updateDoneStatus"
+              @item-deleted="deleteTodo"
+              @item-edited="editTodo"
+            />
+          </template>
+        </draggable>
+      </el-card>
+      <el-card class="category-card">
+        <template #header>
+          <span>分析區</span>
+        </template>
+        <draggable
+          :list="todosByCategory.analyze"
+          group="todos"
+          @change="onDragChange('analyze', $event)"
+          item-key="id"
+        >
+          <template #item="{ element }">
+            <ToDoItem
+              :id="element.id"
+              :label="element.label"
+              :done="element.done"
+              @checkbox-changed="updateDoneStatus"
+              @item-deleted="deleteTodo"
+              @item-edited="editTodo"
+            />
+          </template>
+        </draggable>
+      </el-card>
+      <el-card class="category-card">
+        <template #header>
+          <span>總結區</span>
+        </template>
+        <draggable
+          :list="todosByCategory.summary"
+          group="todos"
+          @change="onDragChange('summary', $event)"
+          item-key="id"
+        >
+          <template #item="{ element }">
+            <ToDoItem
+              :id="element.id"
+              :label="element.label"
+              :done="element.done"
+              @checkbox-changed="updateDoneStatus"
+              @item-deleted="deleteTodo"
+              @item-edited="editTodo"
+            />
+          </template>
+        </draggable>
+      </el-card>
     </div>
     <el-card class="box-card" style="margin-top: 20px;">
       <template #header>
@@ -193,7 +181,13 @@ export default {
 .todo-categories {
   margin-top: 20px;
 }
+.todo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 .category-card {
   min-height: 200px;
+  width: 100%;
 }
 </style>
