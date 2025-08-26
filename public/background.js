@@ -89,3 +89,19 @@ const keepAlive = () => {
 
 // 啟動keepalive
 keepAlive();
+
+// 點擊擴展圖標時，注入 floatingBall.js 到當前 tab
+// （已改為 content_scripts 自動注入，這段可移除避免重複注入）
+// chrome.action.onClicked.addListener((tab) => {
+//   if (!tab.id) return;
+//   chrome.scripting.executeScript({
+//     target: { tabId: tab.id },
+//     files: ['floatingBall.js']
+//   }, () => {
+//     if (chrome.runtime.lastError) {
+//       console.error('注入 floatingBall.js 失敗:', chrome.runtime.lastError.message);
+//     } else {
+//       console.log('已注入 floatingBall.js 到 tab', tab.id);
+//     }
+//   });
+// });
