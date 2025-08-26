@@ -13,17 +13,25 @@
   </el-form>
 </template>
 
-<script setup>
-import { ref, defineEmits } from 'vue';
+<script>
 import { Plus } from '@element-plus/icons-vue';
 
-const label = ref("");
-const emit = defineEmits(['todo-add']);
-
-function onSubmit() {
-  if (label.value) {
-    emit('todo-add', label.value);
-    label.value = "";
+export default {
+  name: 'TodoForm',
+  emits: ['todo-add'],
+  data() {
+    return {
+      label: "",
+      Plus
+    }
+  },
+  methods: {
+    onSubmit() {
+      if (this.label) {
+        this.$emit('todo-add', this.label);
+        this.label = "";
+      }
+    }
   }
 }
 </script>
