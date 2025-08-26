@@ -135,24 +135,51 @@ function checkAndProcessPendingTodos() {
   max-width: 800px;
   margin: 20px auto;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '\5FAE\8F6F\96C5\9ED1', Arial, sans-serif;
+  /* 防止 ResizeObserver 錯誤的 CSS 修復 */
+  contain: layout style paint;
+  will-change: auto;
 }
 
 .app-header {
   text-align: center;
   padding: 20px 0;
+  /* 穩定化 header 尺寸 */
+  min-height: 80px;
 }
 
 .app-header h1 {
   color: #409EFF;
   margin-bottom: 20px;
+  /* 防止文字引起的尺寸變化 */
+  line-height: 1.2;
 }
 
 .nav-menu {
   display: flex;
   justify-content: center;
+  /* 穩定化導航菜單 */
+  min-height: 60px;
 }
 
 .nav-menu .el-menu {
   border-bottom: none;
+  /* 防止動態尺寸變化 */
+  flex-shrink: 0;
+}
+
+/* 全局 Element Plus 組件修復 */
+.el-card {
+  /* 防止卡片組件引起的 ResizeObserver 錯誤 */
+  contain: layout;
+}
+
+.el-menu-item {
+  /* 穩定化菜單項目尺寸 */
+  min-width: 80px;
+}
+
+/* 防止滾動條引起的尺寸變化 */
+.el-main {
+  overflow-x: hidden;
 }
 </style>
