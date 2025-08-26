@@ -1,5 +1,13 @@
 <template>
   <div class="todos-view">
+    <el-card class="box-card" style="margin-bottom: 20px;">
+      <template #header>
+        <div class="card-header">
+          <span>清單摘要</span>
+          <el-text type="info" size="small">{{ listSummary }}</el-text>
+        </div>
+      </template>
+    </el-card>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
@@ -99,14 +107,6 @@
         </draggable>
       </el-card>
     </div>
-    <el-card class="box-card" style="margin-top: 20px;">
-      <template #header>
-        <div class="card-header">
-          <span>清單摘要</span>
-          <el-text type="info" size="small">{{ listSummary }}</el-text>
-        </div>
-      </template>
-    </el-card>
   </div>
 </template>
 
