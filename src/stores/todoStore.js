@@ -108,17 +108,37 @@ export const useTodoStore = defineStore('todo', () => {
   })
 
   // 動作
+  // 區塊編號優先順序
+  // const categoryList = ['draft', 'explain', 'analyze', 'summary']
+    const categoryList = ['explain', 'analyze', 'summary']
+
+    // 可選：每區最大容量（如有需求可設，否則不限制）
+  // const maxPerCategory = 10
+
   function addTodo(newTodoLabel) {
+    // 依序尋找第一個可用的 category
+    let targetCategory = 'draft'
+    for (const cat of categoryList) {
+      // 若有最大容量限制，需判斷
+      // const count = todoItems.value.filter(item => item.category === cat).length
+      // if (count < maxPerCategory) {
+      //   targetCategory = cat
+      //   break
+      // }
+      // 無容量限制，直接分配到第一個 category
+      targetCategory = cat
+      break
+    }
     const newTodo = {
       id: 'todo-' + crypto.randomUUID(),
       label: newTodoLabel,
       done: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      category: 'draft' // 新增分類屬性，預設為暫存區
+      category: targetCategory
     }
     todoItems.value.push(newTodo)
-    console.log('新增待辦事項:', newTodoLabel, '，當前總數:', todoItems.value.length)
+    console.log('新增待辦事項:', newTodoLabel, '分配到:', targetCategory, '當前總數:', todoItems.value.length)
   }
 
   function setTodoCategory(todoId, category) {

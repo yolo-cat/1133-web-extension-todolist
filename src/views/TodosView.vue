@@ -18,9 +18,10 @@
     </el-card>
 
     <div class="todo-categories todo-stack">
+      <!-- 暫存區完全隱藏，以下區塊移除 -->
+      <!--
       <el-card class="category-card">
         <template #header>
-          <span>暫存區</span>
         </template>
         <draggable
           :list="todosByCategory.draft"
@@ -40,6 +41,7 @@
           </template>
         </draggable>
       </el-card>
+      -->
       <el-card class="category-card">
         <template #header>
           <span>解釋區</span>

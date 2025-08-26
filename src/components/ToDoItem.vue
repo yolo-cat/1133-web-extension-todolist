@@ -7,7 +7,7 @@
           @change="onCheckboxChanged"
           size="large"
         />
-        <span :class="{ 'is-done': done }" class="item-label" @click="goToDetail">{{ label }}</span>
+        <span :class="{ 'is-done': done }" class="item-label" @click="insertLabelToTab">{{ label }}</span>
         <div class="item-actions">
           <el-button type="info" :icon="View" circle @click="goToDetail" />
           <el-button type="primary" :icon="Edit" circle @click="isEditing = true" />
@@ -72,6 +72,31 @@ export default {
     },
     onCloseEditForm() {
       this.isEditing = false;
+    },
+    insertLabelToTab() {
+      const label = this.label
+      if (window.chrome && chrome.tabs && chrome.runtime) {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          const tab = tabs[0]
+          if (!tab || !tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('extension://')) {
+            this.$message.warning('請在一般網頁（如 chatgpt.com）上使用此功能')
+            return
+          }
+          chrome.tabs.sendMessage(
+            tab.id,
+            { action: 'insertLabel', label },
+            (response) => {
+              if (response && response.success) {
+                this.$message.success('已插入到網頁欄位')
+              } else {
+                this.$message.warning('插入失敗或找不到欄位')
+              }
+            }
+          )
+        })
+      } else {
+        this.$message.warning('請在 Chrome 擴展環境下使用')
+      }
     },
     goToDetail() {
       this.$router.push(`/todos/${this.id}`);

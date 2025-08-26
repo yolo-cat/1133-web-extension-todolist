@@ -201,6 +201,67 @@ if (chrome && chrome.runtime && chrome.runtime.onMessage) {
     }
     return true;
   });
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'insertLabel') {
+      const label = request.label
+      // 1. 先嘗試 input 欄位
+      let target = document.querySelector('input.placeholder')
+      if (target) {
+        const start = target.selectionStart || 0
+        const end = target.selectionEnd || 0
+        const value = target.value || ''
+        target.value = value.slice(0, start) + label + value.slice(end)
+        const newPos = start + label.length
+        target.setSelectionRange(newPos, newPos)
+        target.dispatchEvent(new Event('input', { bubbles: true }))
+        console.log('[TodoList Extension] 插入到 input.placeholder 成功')
+        sendResponse({ success: true })
+        return true
+      }
+      // 2. 嘗試 ProseMirror 主編輯區
+      target = document.querySelector('.ProseMirror')
+      if (!target) {
+        target = document.querySelector('div[contenteditable="true"]')
+      }
+      if (target) {
+        target.focus()
+        document.execCommand('insertText', false, label)
+        target.dispatchEvent(new Event('input', { bubbles: true }))
+        console.log('[TodoList Extension] 插入到 ProseMirror 主編輯區成功')
+        sendResponse({ success: true })
+        return true
+      }
+      // 3. 兼容舊版 <p class="placeholder">
+      target = document.querySelector('p.placeholder[data-placeholder="詢問任何問題"]')
+      if (!target) {
+        target = document.querySelector('p.placeholder')
+      }
+      if (target) {
+        target.textContent = label
+        target.dispatchEvent(new Event('input', { bubbles: true }))
+        console.log('[TodoList Extension] 插入到 p.placeholder 成功')
+        sendResponse({ success: true })
+        return true
+      }
+      console.warn('[TodoList Extension] 插入失敗，找不到目標欄位')
+      // 列出所有可編輯元素，協助 debug
+      const editableNodes = Array.from(document.querySelectorAll('[contenteditable], input, textarea'))
+      editableNodes.forEach(node => {
+        console.log('[TodoList Extension] 可編輯元素:', {
+          tag: node.tagName,
+          class: node.className,
+          name: node.getAttribute('name'),
+          id: node.id,
+          contenteditable: node.getAttribute('contenteditable'),
+          placeholder: node.getAttribute('placeholder'),
+          dataPlaceholder: node.getAttribute('data-placeholder'),
+          value: node.value
+        })
+      })
+      sendResponse({ success: false })
+      return true
+    }
+  });
 }
 
 // 檢測擴展是否正確載入
