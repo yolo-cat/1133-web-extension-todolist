@@ -4,7 +4,7 @@
     <el-form-item>
       <el-input
         v-model.lazy.trim="label"
-        placeholder="請輸入待辦事項"
+        placeholder="Add anything to ChatContext"
         clearable
       ></el-input>
     </el-form-item>

@@ -44,7 +44,7 @@ onMounted(async () => {
             // 發送成功確認
             const response = {
               success: true,
-              message: '待辦事項已新增',
+              message: 'Added',
               todoCount: todoStore.todoItems.length
             }
 
@@ -52,7 +52,7 @@ onMounted(async () => {
             sendResponse(response)
 
             // 顯示成功提示
-            ElMessage.success(`已新增待辦事項：${message.text.substring(0, 20)}${message.text.length > 20 ? '...' : ''}`)
+            ElMessage.success(`Added：${message.text.substring(0, 20)}${message.text.length > 20 ? '...' : ''}`)
 
             // 如果訊息來自background，發送確認到content script
             if (message.fromBackground && sender.tab) {
@@ -74,7 +74,7 @@ onMounted(async () => {
             error: error.message
           }
           sendResponse(errorResponse)
-          ElMessage.error('新增待辦事項失敗：' + error.message)
+          ElMessage.error('add fail：' + error.message)
         }
       }
 
@@ -82,9 +82,9 @@ onMounted(async () => {
       return true
     })
 
-    console.log('TodoList Extension: Message listener registered successfully')
+    console.log('ChatContext Extension: Message listener registered successfully')
   } else {
-    console.warn('TodoList Extension: Chrome runtime not available - running in web mode')
+    console.warn('ChatContext Extension: Chrome runtime not available - running in web mode')
   }
 })
 
@@ -93,7 +93,7 @@ function checkAndProcessPendingTodos() {
   if (chrome && chrome.storage) {
     chrome.storage.local.get(['pendingTodos'], (result) => {
       const pendingTodos = result.pendingTodos || []
-      console.log('TodoList Extension: Found pending todos:', pendingTodos.length)
+      console.log('ChatContext Extension: Found pending todos:', pendingTodos.length)
 
       if (pendingTodos.length > 0) {
         let processedCount = 0
@@ -101,7 +101,7 @@ function checkAndProcessPendingTodos() {
         // 處理所有pending todos
         pendingTodos.forEach((pendingTodo, index) => {
           if (!pendingTodo.processed) {
-            console.log('TodoList Extension: Processing pending todo:', pendingTodo.text)
+            console.log('ChatContext Extension: Processing pending todo:', pendingTodo.text)
             todoStore.addTodo(pendingTodo.text)
             pendingTodos[index].processed = true
             processedCount++
@@ -111,7 +111,7 @@ function checkAndProcessPendingTodos() {
         // 清除已處理的pending todos
         const unprocessedTodos = pendingTodos.filter(todo => !todo.processed)
         chrome.storage.local.set({ pendingTodos: unprocessedTodos }, () => {
-          console.log('TodoList Extension: Pending todos processed and cleaned up')
+          console.log('ChatContext Extension: Pending todos processed and cleaned up')
           if (processedCount > 0) {
             ElMessage.success(`已處理 ${processedCount} 個待辦事項`)
           }
@@ -122,50 +122,50 @@ function checkAndProcessPendingTodos() {
 }
 
 // 關閉懸浮球方法
-function closeFloatingBall() {
-  showFloatingBall.value = false
-  // 通知父頁（content script）關閉懸浮球
-  if (window.parent !== window) {
-    window.parent.postMessage({ type: 'CLOSE_FLOATING_BALL' }, '*');
-  }
-}
-
-function openFloatingBall() {
-  showFloatingBall.value = true
-  // 可根據需求通知父頁顯示懸浮球（如有需要）
-}
+// function closeFloatingBall() {
+//   showFloatingBall.value = false
+//   // 通知父頁（content script）關閉懸浮球
+//   if (window.parent !== window) {
+//     window.parent.postMessage({ type: 'CLOSE_FLOATING_BALL' }, '*');
+//   }
+// }
+//
+// function openFloatingBall() {
+//   showFloatingBall.value = true
+//   // 可根據需求通知父頁顯示懸浮球（如有需要）
+// }
 
 </script>
 
 <template>
   <el-container id="app-container">
     <el-header class="app-header">
-      <h1>我的待辦事項</h1>
-      <el-button
-        v-if="showFloatingBall"
-        type="danger"
-        size="small"
-        style="position:absolute;top:18px;right:24px;z-index:2000;"
-        @click="closeFloatingBall"
-      >關閉懸浮球</el-button>
-      <el-button
-        v-else
-        type="primary"
-        size="small"
-        style="position:absolute;top:18px;right:24px;z-index:2000;"
-        @click="openFloatingBall"
-      >顯示懸浮球</el-button>
-      <nav class="nav-menu">
-        <el-menu mode="horizontal" :default-active="$route.path" router>
-          <el-menu-item index="/todos">所有事項</el-menu-item>
-          <el-menu-item index="/todos/finished">已完成</el-menu-item>
-          <el-menu-item index="/data-management">資料管理</el-menu-item>
-        </el-menu>
-      </nav>
+      <h1>ChatContext</h1>
+<!--      <el-button-->
+<!--        v-if="showFloatingBall"-->
+<!--        type="danger"-->
+<!--        size="small"-->
+<!--        style="position:absolute;top:18px;right:24px;z-index:2000;"-->
+<!--        @click="closeFloatingBall"-->
+<!--      >關閉懸浮球</el-button>-->
+<!--      <el-button-->
+<!--        v-else-->
+<!--        type="primary"-->
+<!--        size="small"-->
+<!--        style="position:absolute;top:18px;right:24px;z-index:2000;"-->
+<!--        @click="openFloatingBall"-->
+<!--      >顯示懸浮球</el-button>-->
+<!--      <nav class="nav-menu">-->
+<!--        <el-menu mode="horizontal" :default-active="$route.path" router>-->
+<!--          <el-menu-item index="/todos">所有事項</el-menu-item>-->
+<!--          <el-menu-item index="/todos/finished">已完成</el-menu-item>-->
+<!--          <el-menu-item index="/data-management">資料管理</el-menu-item>-->
+<!--        </el-menu>-->
+<!--      </nav>-->
     </el-header>
-    <el-main>
+<!--    <el-main>-->
       <router-view />
-    </el-main>
+<!--    </el-main>-->
   </el-container>
 </template>
 
