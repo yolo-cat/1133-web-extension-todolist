@@ -114,11 +114,29 @@ export const useTodoStore = defineStore('todo', () => {
       label: newTodoLabel,
       done: false,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      category: 'draft' // 新增分類屬性，預設為暫存區
     }
     todoItems.value.push(newTodo)
     console.log('新增待辦事項:', newTodoLabel, '，當前總數:', todoItems.value.length)
   }
+
+  function setTodoCategory(todoId, category) {
+    const todo = todoItems.value.find(item => item.id === todoId)
+    if (todo) {
+      todo.category = category
+      todo.updatedAt = new Date().toISOString()
+    }
+  }
+
+  const todosByCategory = computed(() => {
+    return {
+      draft: todoItems.value.filter(item => item.category === 'draft'),
+      explain: todoItems.value.filter(item => item.category === 'explain'),
+      analyze: todoItems.value.filter(item => item.category === 'analyze'),
+      summary: todoItems.value.filter(item => item.category === 'summary')
+    }
+  })
 
   function updateDoneStatus(todoId) {
     const todo = todoItems.value.find(item => item.id === todoId)
@@ -214,6 +232,8 @@ export const useTodoStore = defineStore('todo', () => {
     saveToStorage,
     loadFromStorage,
     syncToAllTabs,
-    updateStorageStats
+    updateStorageStats,
+    setTodoCategory,
+    todosByCategory
   }
 })

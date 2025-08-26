@@ -21,8 +21,12 @@ export default {
   emits: ['todo-add'],
   data() {
     return {
-      label: "",
-      Plus
+      label: ""
+    }
+  },
+  computed: {
+    Plus() {
+      return Plus
     }
   },
   methods: {
