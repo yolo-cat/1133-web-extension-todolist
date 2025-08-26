@@ -1,44 +1,3 @@
-<script setup>
-import { ref, defineProps, defineEmits } from 'vue';
-import ToDoItemEditForm from './ToDoItemEditForm.vue';
-import { Edit, Delete } from '@element-plus/icons-vue';
-
-const props = defineProps({
-  label: {
-    type: String,
-    required: true
-  },
-  done: {
-    type: Boolean,
-    default: false
-  },
-  id: {
-    type: String,
-    required: true
-  }
-});
-
-const emit = defineEmits(['checkbox-changed', 'item-deleted', 'item-edited']);
-const isEditing = ref(false);
-
-function onCheckboxChanged() {
-  emit('checkbox-changed', props.id);
-}
-
-function onItemDeleted() {
-  emit('item-deleted', props.id);
-}
-
-function onItemEdited(newLabel) {
-  emit('item-edited', props.id, newLabel);
-  isEditing.value = false;
-}
-
-function onCloseEditForm() {
-  isEditing.value = false;
-}
-</script>
-
 <template>
   <div class="todo-item">
     <el-card shadow="hover" :body-style="{ padding: '10px' }">
@@ -48,9 +7,10 @@ function onCloseEditForm() {
           @change="onCheckboxChanged"
           size="large"
         />
-        <span :class="{ 'is-done': done }" class="item-label">{{ label }}</span>
+        <span :class="{ 'is-done': done }" class="item-label" @click="insertLabelToTab">{{ label }}</span>
         <div class="item-actions">
-          <el-button type="primary" :icon="Edit" circle @click="isEditing = true" />
+<!--          <el-button type="info" :icon="View" circle @click="goToDetail" />-->
+<!--          <el-button type="primary" :icon="Edit" circle @click="isEditing = true" />-->
           <el-button type="danger" :icon="Delete" circle @click="onItemDeleted" />
         </div>
       </div>
@@ -66,6 +26,85 @@ function onCloseEditForm() {
   </div>
 </template>
 
+<script>
+import { markRaw } from 'vue'
+import ToDoItemEditForm from './ToDoItemEditForm.vue';
+import { Edit, Delete, View } from '@element-plus/icons-vue';
+
+export default {
+  name: 'ToDoItem',
+  components: {
+    ToDoItemEditForm
+  },
+  props: {
+    label: {
+      type: String,
+      required: true
+    },
+    done: {
+      type: Boolean,
+      default: false
+    },
+    id: {
+      type: String,
+      required: true
+    }
+  },
+  emits: ['checkbox-changed', 'item-deleted', 'item-edited'],
+  data() {
+    return {
+      isEditing: false,
+      Edit: markRaw(Edit),
+      Delete: markRaw(Delete),
+      View: markRaw(View)
+    }
+  },
+  methods: {
+    onCheckboxChanged() {
+      this.$emit('checkbox-changed', this.id);
+    },
+    onItemDeleted() {
+      this.$emit('item-deleted', this.id);
+    },
+    onItemEdited(newLabel) {
+      this.$emit('item-edited', this.id, newLabel);
+      this.isEditing = false;
+    },
+    onCloseEditForm() {
+      this.isEditing = false;
+    },
+    insertLabelToTab() {
+      const label = this.label
+      if (window.chrome && chrome.tabs && chrome.runtime) {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          const tab = tabs[0]
+          if (!tab || !tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('extension://')) {
+            this.$message.warning('請在一般網頁（如 chatgpt.com）上使用此功能')
+            return
+          }
+          chrome.tabs.sendMessage(
+            tab.id,
+            { action: 'insertLabel', label },
+            (response) => {
+              if (response && response.success) {
+                this.$message.success('已插入到網頁欄位')
+              } else {
+                this.$message.warning('插入失敗或找不到欄位')
+              }
+            }
+          )
+        })
+      } else {
+        this.$message.warning('請在 Chrome 擴展環境下使用')
+      }
+    },
+    goToDetail() {
+      this.$router.push(`/todos/${this.id}`);
+    }
+  }
+}
+</script>
+
 <style scoped>
 .todo-item {
   margin-bottom: 10px;
@@ -80,6 +119,12 @@ function onCloseEditForm() {
 .item-label {
   margin-left: 10px;
   flex-grow: 1;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.item-label:hover {
+  color: #409EFF;
 }
 
 .item-label.is-done {

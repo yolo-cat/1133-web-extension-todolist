@@ -1,9 +1,10 @@
 <template>
   <el-form @submit.prevent="onSubmit" :inline="true">
-    <el-form-item label="新的待辦事項">
+    <!-- 隱藏label="新的待辦事項"區塊 -->
+    <el-form-item>
       <el-input
         v-model.lazy.trim="label"
-        placeholder="請輸入待辦事項"
+        placeholder="Add anything to ChatContext"
         clearable
       ></el-input>
     </el-form-item>
@@ -13,17 +14,26 @@
   </el-form>
 </template>
 
-<script setup>
-import { ref, defineEmits } from 'vue';
+<script>
+import { markRaw } from 'vue'
 import { Plus } from '@element-plus/icons-vue';
 
-const label = ref("");
-const emit = defineEmits(['todo-add']);
-
-function onSubmit() {
-  if (label.value) {
-    emit('todo-add', label.value);
-    label.value = "";
+export default {
+  name: 'TodoForm',
+  emits: ['todo-add'],
+  data() {
+    return {
+      label: "",
+      Plus: markRaw(Plus)
+    }
+  },
+  methods: {
+    onSubmit() {
+      if (this.label) {
+        this.$emit('todo-add', this.label);
+        this.label = "";
+      }
+    }
   }
 }
 </script>

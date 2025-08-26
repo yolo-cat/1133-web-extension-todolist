@@ -1,37 +1,3 @@
-<script setup>
-import { ref, defineProps, defineEmits } from 'vue';
-import { Check, Delete, Close } from '@element-plus/icons-vue';
-
-const props = defineProps({
-  label: {
-    type: String,
-    required: true
-  },
-  id: {
-    type: String,
-    required: true
-  }
-});
-
-const emit = defineEmits(['item-edited', 'item-deleted', 'close-edit-form']);
-const newLabel = ref(props.label);
-
-function onSubmit() {
-  if (newLabel.value && newLabel.value !== props.label) {
-    emit('item-edited', newLabel.value);
-  }
-  emit('close-edit-form'); // Always close after submit
-}
-
-function onDelete() {
-  emit('item-deleted');
-}
-
-function onCancel() {
-  emit('close-edit-form');
-}
-</script>
-
 <template>
   <el-form @submit.prevent="onSubmit" :inline="true" class="edit-form">
     <el-form-item class="edit-form__input">
@@ -46,6 +12,48 @@ function onCancel() {
     </el-form-item>
   </el-form>
 </template>
+
+<script>
+import { markRaw } from 'vue'
+import { Check, Delete, Close } from '@element-plus/icons-vue';
+
+export default {
+  name: 'ToDoItemEditForm',
+  props: {
+    label: {
+      type: String,
+      required: true
+    },
+    id: {
+      type: String,
+      required: true
+    }
+  },
+  emits: ['item-edited', 'item-deleted', 'close-edit-form'],
+  data() {
+    return {
+      newLabel: this.label,
+      Check: markRaw(Check),
+      Delete: markRaw(Delete),
+      Close: markRaw(Close)
+    }
+  },
+  methods: {
+    onSubmit() {
+      if (this.newLabel && this.newLabel !== this.label) {
+        this.$emit('item-edited', this.newLabel);
+      }
+      this.$emit('close-edit-form'); // Always close after submit
+    },
+    onDelete() {
+      this.$emit('item-deleted');
+    },
+    onCancel() {
+      this.$emit('close-edit-form');
+    }
+  }
+}
+</script>
 
 <style scoped>
 .edit-form {
