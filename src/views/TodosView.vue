@@ -46,7 +46,7 @@
       -->
       <el-card class="category-card">
         <template #header>
-          <span>解釋區</span>
+          <el-button type="primary" size="small" @click="sendLabelToTab('#解釋')">#解釋</el-button>
         </template>
         <draggable
           :list="todosByCategory.explain"
@@ -68,7 +68,7 @@
       </el-card>
       <el-card class="category-card">
         <template #header>
-          <span>分析區</span>
+          <el-button type="primary" size="small" @click="sendLabelToTab('#分析')">#分析</el-button>
         </template>
         <draggable
           :list="todosByCategory.analyze"
@@ -90,7 +90,7 @@
       </el-card>
       <el-card class="category-card">
         <template #header>
-          <span>總結區</span>
+          <el-button type="primary" size="small" @click="sendLabelToTab('#總結')">#總結</el-button>
         </template>
         <draggable
           :list="todosByCategory.summary"
@@ -172,6 +172,30 @@ export default {
           if (insertIndex === -1) insertIndex = this.todoStore.todoItems.length
           this.todoStore.todoItems.splice(insertIndex, 0, item)
         }
+      }
+    },
+    sendLabelToTab(label) {
+      if (window.chrome && chrome.tabs && chrome.runtime) {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          const tab = tabs[0]
+          if (!tab || !tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('extension://')) {
+            this.$message.warning('請在一般網頁（如 chatgpt.com）上使用此功能')
+            return
+          }
+          chrome.tabs.sendMessage(
+            tab.id,
+            { action: 'insertLabel', label },
+            (response) => {
+              if (response && response.success) {
+                this.$message.success('已插入到網頁欄位')
+              } else {
+                this.$message.warning('插入失敗或找不到欄位')
+              }
+            }
+          )
+        })
+      } else {
+        this.$message.warning('請在 Chrome 擴展環境下使用')
       }
     }
   }

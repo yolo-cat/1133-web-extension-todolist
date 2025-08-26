@@ -61,7 +61,7 @@ document.addEventListener('mouseup', (event) => {
         }
 
         // 立即顯示通知，不等待擴展回應
-        showNotification(`正在添加到待辦清單: ${selectedText.substring(0, 30)}${selectedText.length > 30 ? '...' : ''}`);
+        showNotification(`正在添加: ${selectedText.substring(0, 30)}${selectedText.length > 30 ? '...' : ''}`);
 
         try {
           if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
@@ -73,7 +73,7 @@ document.addEventListener('mouseup', (event) => {
                   showNotification('❌ 添加失敗：' + chrome.runtime.lastError.message, 'error');
                 } else if (response && response.success) {
                   console.log('TodoList Extension: Message sent successfully');
-                  showNotification(`✅ 已添加到待辦清單: ${selectedText.substring(0, 30)}${selectedText.length > 30 ? '...' : ''}`, 'success');
+                  showNotification(`✅ 已添加: ${selectedText.substring(0, 30)}${selectedText.length > 30 ? '...' : ''}`, 'success');
                 } else {
                   console.error('TodoList Extension: Failed response:', response);
                   showNotification('❌ 添加失敗：無效回應', 'error');
@@ -209,9 +209,14 @@ if (chrome && chrome.runtime && chrome.runtime.onMessage) {
       if (target) {
         const start = target.selectionStart || 0
         const end = target.selectionEnd || 0
-        const value = target.value || ''
-        target.value = value.slice(0, start) + label + value.slice(end)
-        const newPos = start + label.length
+        let value = target.value || ''
+        // 判斷是否已有內容，第二次及以後插入加上換行
+        let insertText = label
+        if (value.length > 0 && start === end && start === value.length) {
+          insertText = '\n' + label
+        }
+        target.value = value.slice(0, start) + insertText + value.slice(end)
+        const newPos = start + insertText.length
         target.setSelectionRange(newPos, newPos)
         target.dispatchEvent(new Event('input', { bubbles: true }))
         console.log('[TodoList Extension] 插入到 input.placeholder 成功')
@@ -224,8 +229,13 @@ if (chrome && chrome.runtime && chrome.runtime.onMessage) {
         target = document.querySelector('div[contenteditable="true"]')
       }
       if (target) {
+        // 判斷是否已有內容，第二次及以後插入加上換行
+        let insertText = label
+        if (target.textContent.length > 0) {
+          insertText = '\n' + label
+        }
         target.focus()
-        document.execCommand('insertText', false, label)
+        document.execCommand('insertText', false, insertText)
         target.dispatchEvent(new Event('input', { bubbles: true }))
         console.log('[TodoList Extension] 插入到 ProseMirror 主編輯區成功')
         sendResponse({ success: true })
@@ -237,7 +247,12 @@ if (chrome && chrome.runtime && chrome.runtime.onMessage) {
         target = document.querySelector('p.placeholder')
       }
       if (target) {
-        target.textContent = label
+        // 判斷是否已有內容，第二次及以後插入加上換行
+        let insertText = label
+        if (target.textContent.length > 0) {
+          insertText = '\n' + label
+        }
+        target.textContent += insertText
         target.dispatchEvent(new Event('input', { bubbles: true }))
         console.log('[TodoList Extension] 插入到 p.placeholder 成功')
         sendResponse({ success: true })
