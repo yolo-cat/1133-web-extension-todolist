@@ -9,7 +9,7 @@
       </template>
       <div class="todo-detail">
         <el-descriptions :column="1" border>
-          <el-descriptions-item label="ID">{{ todo.id }}</el-descriptions-item>
+          <!-- <el-descriptions-item label="ID">{{ todo.id }}</el-descriptions-item> -->
           <el-descriptions-item label="內容">{{ todo.label }}</el-descriptions-item>
           <el-descriptions-item label="狀態">
             <el-tag :type="todo.done ? 'success' : 'warning'">

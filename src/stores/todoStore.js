@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { ChromeExtensionStorage } from '../utils/ChromeExtensionStorage.js'
 
 export const useTodoStore = defineStore('todo', () => {
@@ -8,16 +8,20 @@ export const useTodoStore = defineStore('todo', () => {
 
   // 預設數據
   const defaultTodos = [
-    { id: 'todo-' + crypto.randomUUID(), label: '買牛奶', done: false, createdAt: new Date().toISOString() },
-    { id: 'todo-' + crypto.randomUUID(), label: '週日約會', done: false, createdAt: new Date().toISOString() },
-    { id: 'todo-' + crypto.randomUUID(), label: '週一會議', done: true, createdAt: new Date().toISOString() },
-    { id: 'todo-' + crypto.randomUUID(), label: '週二報告', done: false, createdAt: new Date().toISOString() }
+    // { id: 'todo-' + crypto.randomUUID(), label: '買牛奶', done: false, createdAt: new Date().toISOString() },
+    // { id: 'todo-' + crypto.randomUUID(), label: '週日約會', done: false, createdAt: new Date().toISOString() },
+    // { id: 'todo-' + crypto.randomUUID(), label: '週一會議', done: true, createdAt: new Date().toISOString() },
+    // { id: 'todo-' + crypto.randomUUID(), label: '週二報告', done: false, createdAt: new Date().toISOString() }
   ]
 
   // 初始化狀態
   const todoItems = ref([])
   const isLoading = ref(true)
   const storageStats = ref({ used: 0, quota: 0, percentage: 0 })
+
+  // 防抖相關變數
+  let saveTimeoutId = null
+  let isSaving = ref(false)
 
   // 初始化數據載入
   const initializeData = async () => {
@@ -51,11 +55,35 @@ export const useTodoStore = defineStore('todo', () => {
     }
   }
 
-  // 監聽todoItems變化，自動保存
+  // 防抖保存函數
+  const debouncedSave = async (todos) => {
+    // 清除之前的定時器
+    if (saveTimeoutId) {
+      clearTimeout(saveTimeoutId)
+    }
+
+    // 設置新的定時器，300ms 後執行保存
+    saveTimeoutId = setTimeout(async () => {
+      if (!isLoading.value && !isSaving.value) {
+        try {
+          isSaving.value = true
+          console.log('正在保存數據到 storage，共', todos.length, '個項目')
+          await storage.save(todos)
+          await updateStorageStats()
+          console.log('數據保存成功')
+        } catch (error) {
+          console.error('保存數據失敗:', error)
+        } finally {
+          isSaving.value = false
+        }
+      }
+    }, 300)
+  }
+
+  // 監聽todoItems變化，使用防抖自動保存
   watch(todoItems, async (newTodos) => {
     if (!isLoading.value) {
-      await storage.save(newTodos)
-      await updateStorageStats()
+      await debouncedSave([...newTodos])
     }
   }, { deep: true })
 
@@ -63,7 +91,12 @@ export const useTodoStore = defineStore('todo', () => {
   storage.onStorageChanged((newValue, oldValue) => {
     if (newValue && newValue.todos && Array.isArray(newValue.todos)) {
       console.log('檢測到其他標籤頁的數據變化，正在同步...')
+      // 暫時停止監聽，避免循環觸發
+      isLoading.value = true
       todoItems.value = newValue.todos
+      nextTick(() => {
+        isLoading.value = false
+      })
     }
   })
 
@@ -84,6 +117,7 @@ export const useTodoStore = defineStore('todo', () => {
       updatedAt: new Date().toISOString()
     }
     todoItems.value.push(newTodo)
+    console.log('新增待辦事項:', newTodoLabel, '，當前總數:', todoItems.value.length)
   }
 
   function updateDoneStatus(todoId) {
@@ -168,6 +202,7 @@ export const useTodoStore = defineStore('todo', () => {
     isLoading,
     storageStats,
     listSummary,
+    initializeData,
     addTodo,
     updateDoneStatus,
     deleteTodo,

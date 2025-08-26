@@ -7,8 +7,16 @@ import { onMounted } from 'vue'
 const todoStore = useTodoStore()
 
 // 註冊 Chrome 擴充訊息監聽
-onMounted(() => {
+onMounted(async () => {
   console.log('TodoList Extension: Vue app mounted, setting up message listener...')
+
+  // 初始化載入事項資料，確保每次啟動都從 storage 載入
+  try {
+    await todoStore.initializeData()
+    console.log('TodoList Extension: Store data initialized successfully')
+  } catch (error) {
+    console.error('TodoList Extension: Failed to initialize store data:', error)
+  }
 
   if (window.chrome && chrome.runtime && chrome.runtime.onMessage) {
     console.log('TodoList Extension: Chrome runtime available, setting up message listener')
