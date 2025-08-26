@@ -215,4 +215,16 @@
       }
     }, 4000);
   }
+
+  // 新增：監聽來自 iframe 的關閉懸浮球訊息
+  window.addEventListener('message', function(event) {
+    if (event && event.data && event.data.type === 'CLOSE_FLOATING_BALL') {
+      // 關閉懸浮球
+      const ball = document.getElementById('todolist-floating-ball');
+      if (ball && ball.parentNode) ball.parentNode.removeChild(ball);
+      // 關閉 todolist-app-iframe-wrapper
+      const wrapper = document.getElementById('todolist-app-iframe-wrapper');
+      if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+    }
+  });
 })();

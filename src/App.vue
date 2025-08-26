@@ -118,12 +118,26 @@ function checkAndProcessPendingTodos() {
   }
 }
 
+// 關閉懸浮球方法
+function closeFloatingBall() {
+  // 通知父頁（content script）關閉懸浮球
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'CLOSE_FLOATING_BALL' }, '*');
+  }
+}
+
 </script>
 
 <template>
   <el-container id="app-container">
     <el-header class="app-header">
       <h1>我的待辦事項</h1>
+      <el-button
+        type="danger"
+        size="small"
+        style="position:absolute;top:18px;right:24px;z-index:2000;"
+        @click="closeFloatingBall"
+      >關閉懸浮球</el-button>
       <nav class="nav-menu">
         <el-menu mode="horizontal" :default-active="$route.path" router>
           <el-menu-item index="/todos">所有事項</el-menu-item>
