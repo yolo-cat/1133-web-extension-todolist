@@ -1,6 +1,7 @@
 <template>
   <el-form @submit.prevent="onSubmit" :inline="true">
-    <el-form-item label="新的待辦事項">
+    <!-- 隱藏label="新的待辦事項"區塊 -->
+    <el-form-item>
       <el-input
         v-model.lazy.trim="label"
         placeholder="請輸入待辦事項"

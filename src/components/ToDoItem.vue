@@ -9,8 +9,8 @@
         />
         <span :class="{ 'is-done': done }" class="item-label" @click="insertLabelToTab">{{ label }}</span>
         <div class="item-actions">
-          <el-button type="info" :icon="View" circle @click="goToDetail" />
-          <el-button type="primary" :icon="Edit" circle @click="isEditing = true" />
+<!--          <el-button type="info" :icon="View" circle @click="goToDetail" />-->
+<!--          <el-button type="primary" :icon="Edit" circle @click="isEditing = true" />-->
           <el-button type="danger" :icon="Delete" circle @click="onItemDeleted" />
         </div>
       </div>

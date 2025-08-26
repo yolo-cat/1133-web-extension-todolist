@@ -1,5 +1,6 @@
 <template>
   <div class="todos-view">
+    <!-- 清單摘要區塊隱藏
     <el-card class="box-card" style="margin-bottom: 20px;">
       <template #header>
         <div class="card-header">
@@ -8,14 +9,15 @@
         </div>
       </template>
     </el-card>
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>新增事項</span>
-        </div>
-      </template>
-      <TodoForm @todo-add="addTodo" />
-    </el-card>
+    -->
+<!--    <el-card class="box-card">-->
+<!--      <template #header>-->
+<!--        <div class="card-header">-->
+<!--          <span>新增事項</span>-->
+<!--        </div>-->
+<!--      </template>-->
+<!--      <TodoForm @todo-add="addTodo" />-->
+<!--    </el-card>-->
 
     <div class="todo-categories todo-stack">
       <!-- 暫存區完全隱藏，以下區塊移除 -->

@@ -1,10 +1,13 @@
 <script setup>
 import { useTodoStore } from './stores/todoStore.js'
 import { ElMessage } from 'element-plus'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 // 使用 Pinia store
 const todoStore = useTodoStore()
+
+// 懸浮球顯示狀態
+// const showFloatingBall = ref(true)
 
 // 註冊 Chrome 擴充訊息監聽
 onMounted(async () => {
@@ -120,10 +123,16 @@ function checkAndProcessPendingTodos() {
 
 // 關閉懸浮球方法
 function closeFloatingBall() {
+  showFloatingBall.value = false
   // 通知父頁（content script）關閉懸浮球
   if (window.parent !== window) {
     window.parent.postMessage({ type: 'CLOSE_FLOATING_BALL' }, '*');
   }
+}
+
+function openFloatingBall() {
+  showFloatingBall.value = true
+  // 可根據需求通知父頁顯示懸浮球（如有需要）
 }
 
 </script>
@@ -133,11 +142,19 @@ function closeFloatingBall() {
     <el-header class="app-header">
       <h1>我的待辦事項</h1>
       <el-button
+        v-if="showFloatingBall"
         type="danger"
         size="small"
         style="position:absolute;top:18px;right:24px;z-index:2000;"
         @click="closeFloatingBall"
       >關閉懸浮球</el-button>
+      <el-button
+        v-else
+        type="primary"
+        size="small"
+        style="position:absolute;top:18px;right:24px;z-index:2000;"
+        @click="openFloatingBall"
+      >顯示懸浮球</el-button>
       <nav class="nav-menu">
         <el-menu mode="horizontal" :default-active="$route.path" router>
           <el-menu-item index="/todos">所有事項</el-menu-item>
