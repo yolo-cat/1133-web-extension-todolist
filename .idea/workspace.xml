@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8f7b6115-e774-4941-8d1e-b832b7d37298" name="Changes" comment="🔍 問題根源&#10;數據競爭條件（Race Condition） - 當你快速新增多個待辦事項時，每次操作都會立即觸發 storage.save()，導致多個非同步保存操作同時執行，最後完成的操作會覆蓋前面的數據。&#10;✅ 已實施的修正&#10;防抖機制：300ms 內的多次變化合併為一次保存操作&#10;保存狀態管理：防止重複的保存操作同時執行&#10;同步衝突避免：防止跨分頁數據同步時的循環觸發&#10;詳細日誌：添加控制台日誌便於問題追蹤" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ts.external.directory.path": "/Users/joseph-m2/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+</project>
