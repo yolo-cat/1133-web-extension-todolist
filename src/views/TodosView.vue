@@ -163,9 +163,23 @@ export default {
       this.todoStore.editTodo(todoId, newLabel)
     },
     onDragChange(newCategory, evt) {
-      // vuedraggable 的 change 事件，moved 元素資料在 evt.moved.element
-      if (evt.moved && evt.moved.element && evt.moved.element.id) {
-        this.todoStore.setTodoCategory(evt.moved.element.id, newCategory)
+      // 跨區拖動時，正確移除/新增並排序
+      if (evt.added && evt.added.element && evt.added.element.id) {
+        const itemId = evt.added.element.id
+        const item = this.todoStore.todoItems.find(t => t.id === itemId)
+        if (item) {
+          // 更新 category
+          item.category = newCategory
+          item.updatedAt = new Date().toISOString()
+          // 先移除
+          const oldIndex = this.todoStore.todoItems.findIndex(t => t.id === itemId)
+          this.todoStore.todoItems.splice(oldIndex, 1)
+          // 計算目標插入位置
+          const targetIds = this.todosByCategory[newCategory].map(t => t.id)
+          let insertIndex = this.todoStore.todoItems.findIndex(t => t.id === targetIds[evt.added.newIndex])
+          if (insertIndex === -1) insertIndex = this.todoStore.todoItems.length
+          this.todoStore.todoItems.splice(insertIndex, 0, item)
+        }
       }
     }
   }

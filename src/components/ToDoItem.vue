@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import ToDoItemEditForm from './ToDoItemEditForm.vue';
 import { Edit, Delete, View } from '@element-plus/icons-vue';
 
@@ -53,9 +54,9 @@ export default {
   data() {
     return {
       isEditing: false,
-      Edit,
-      Delete,
-      View
+      Edit: markRaw(Edit),
+      Delete: markRaw(Delete),
+      View: markRaw(View)
     }
   },
   methods: {

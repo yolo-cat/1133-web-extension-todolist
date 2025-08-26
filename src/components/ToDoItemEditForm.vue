@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import { Check, Delete, Close } from '@element-plus/icons-vue';
 
 export default {
@@ -32,9 +33,9 @@ export default {
   data() {
     return {
       newLabel: this.label,
-      Check,
-      Delete,
-      Close
+      Check: markRaw(Check),
+      Delete: markRaw(Delete),
+      Close: markRaw(Close)
     }
   },
   methods: {

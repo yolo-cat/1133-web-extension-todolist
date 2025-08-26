@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import { Plus } from '@element-plus/icons-vue';
 
 export default {
@@ -21,12 +22,8 @@ export default {
   emits: ['todo-add'],
   data() {
     return {
-      label: ""
-    }
-  },
-  computed: {
-    Plus() {
-      return Plus
+      label: "",
+      Plus: markRaw(Plus)
     }
   },
   methods: {
